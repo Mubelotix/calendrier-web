@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <title>Hello World</title>
+
+<link rel="preload" href="/calendrier-web-94f633fe52caf53e_bg.wasm" crossorigin="anonymous" integrity="sha384-5wFZIk7sPWGzcqFSgovhQf8BPz6jpSK2-xxn4Te1UIbdas3opHr7SCja-8e6GOX1" as="fetch" type="application/wasm">
+<link rel="modulepreload" href="/calendrier-web-94f633fe52caf53e.js" crossorigin="anonymous" integrity="sha384-VLHJh-uluvwDJ6jf7AMrqitK2Zh-feLTXKKE_sxX_0lsZEHogKZXKzXzGt2TehDr"></head>
+<body>
+
+
+
+<script type="module">
+import init, * as bindings from '/calendrier-web-94f633fe52caf53e.js';
+init('/calendrier-web-94f633fe52caf53e_bg.wasm');
+window.wasmBindings = bindings;
+
+</script></body></html>
