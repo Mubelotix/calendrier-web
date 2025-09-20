@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendrier</title>
+    <style>
+        :root {
+            --background-100: #fff;
+            --background-200: #eee;
+            --toggle-background: #7d777b;
+            --text: #000;
+            --primary: #DC6ACF;
+        }
+
+        /* TODO Allow changing theme */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-100: #241b22;
+                --background-200: #393037;
+                --background-300: #4e464c;
+                --background-400: #655e63;
+                --background-500: #7d777b;
+                --background-600: #969094;
+                --toggle-background: var(--background-300);
+                --text: #fff;
+            }
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--background-100);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        footer {
+            background-color: var(--background-200);
+            text-align: center;
+            padding: .5rem
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <style>
+        #toggles {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: .5rem;
+        }
+
+        .toggleWrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        /* To hide the checkbox */
+        .checkboxInput {
+            display: none;
+        }
+
+        .toggleSwitch {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 50px;
+            height: 30px;
+            background-color: var(--toggle-background);
+            border-radius: 20px;
+            cursor: pointer;
+            transition-duration: .2s;
+        }
+
+        .toggleSwitch::after {
+            content: "";
+            position: absolute;
+            height: 10px;
+            width: 10px;
+            left: 5px;
+            background-color: transparent;
+            border-radius: 50%;
+            transition-duration: .2s;
+            box-shadow: 5px 2px 7px rgba(8, 8, 8, 0.26);
+            border: 5px solid white;
+        }
+
+        .checkboxInput:checked+.toggleSwitch::after {
+            transform: translateX(100%);
+            transition-duration: .2s;
+            background-color: white;
+        }
+
+        /* Switch background change */
+        .checkboxInput:checked+.toggleSwitch {
+            background-color: var(--primary);
+            transition-duration: .2s;
+        }
+    </style>
+    <style>
+        #art {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 50rem;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div id="toggles">
+            <!-- TODO: Remember state across reloads -->
+
+            <div class="toggleWrapper">
+                Heure décimale
+                <input type="checkbox" id="decimalTime" class="checkboxInput" checked>
+                <label for="decimalTime" class="toggleSwitch"></label>
+            </div>
+
+            <div class="toggleWrapper">
+                Décalage temporel
+                <input type="checkbox" id="timeOffset" class="checkboxInput" checked>
+                <label for="timeOffset" class="toggleSwitch"></label>
+            </div>
+        </div>
+
+
+        <div id="main-info">
+            <h1 id="date">3 Vendémiaire 234</h1>
+
+            <h2 id="day-name">
+                Jour des récompenses
+            </h2>
+
+            <h2>
+                <span id="hour">12</span>:<span id="minute">30</span>:<span id="second">45</span>
+            </h2>
+        </div>
+
+        <img src="art.png" alt="Marianne" id="art">
+    </main>
+
+    <footer>
+        <span id="footer-text">
+            Créé par <a href="https://github.com/Mubelotix">Mubelotix</a> sur <a href="https://github.com/Mubelotix/calendrier-web">Github</a>.
+        </span>
+    </footer>
+
+    <script>
+        const art = document.getElementById('art');
+        const mainInfo = document.getElementById('main-info');
+        const footerText = document.getElementById('footer-text');
+
+        function onresize() {
+            art.style.display = 'block';
+            let success = false;
+            for (let size = 50; size >= 20; size--) {
+                art.style.width = size + 'rem';
+                const artRect = art.getBoundingClientRect();
+                const mainInfoRect = mainInfo.getBoundingClientRect();
+                const footerTextRect = footerText.getBoundingClientRect();
+                const intersectsMainInfo = !(artRect.right < mainInfoRect.left ||
+                    artRect.left > mainInfoRect.right ||
+                    artRect.bottom < mainInfoRect.top ||
+                    artRect.top > mainInfoRect.bottom);
+                const intersectsFooterText = !(artRect.right < footerTextRect.left ||
+                    artRect.left > footerTextRect.right ||
+                    artRect.bottom < footerTextRect.top ||
+                    artRect.top > footerTextRect.bottom);
+
+                // if any intersect
+                if (intersectsMainInfo || intersectsFooterText) {
+                    continue;
+                } else {
+                    success = true;
+                    break;
+                }
+            }
+
+            if (!success) {
+                art.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('resize', onresize);
+        window.addEventListener('load', onresize);
+    </script>
+</body>
+</html>
