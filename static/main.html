@@ -80,6 +80,7 @@
             flex-direction: row;
             align-items: center;
             gap: .5rem;
+            cursor: help;
         }
 
         /* To hide the checkbox */
@@ -154,7 +155,7 @@
 
 
         <div id="main-info">
-            <h1 id="date">3 Vendémiaire 234</h1>
+            <h1 id="date"><span id="num-day">3</span> <span id="month">Vendémiaire</span> <span id="num-year">234</span></h1>
 
             <h2 id="day-name">
                 Jour des récompenses
@@ -213,5 +214,53 @@
         window.addEventListener('resize', onresize);
         window.addEventListener('load', onresize);
     </script>
+
+    <script type="module">
+        import init, { DateTime, Timestamp as CalendrierTimestamp } from '../calendrier_web.js';
+
+        const numDay = document.getElementById('num-day');
+        const month = document.getElementById('month');
+        const numYear = document.getElementById('num-year');
+        const dayName = document.getElementById('day-name');
+        const hour = document.getElementById('hour');
+        const minute = document.getElementById('minute');
+        const second = document.getElementById('second');
+
+        async function updateTime(timestamp) {
+            let date = new DateTime(timestamp);
+
+            numDay.textContent = date.day.toString();
+            if (date.month === "Sansculotides") {
+                month.textContent = "des " + date.month;
+            }
+            month.textContent = date.month;
+            numYear.textContent = date.year.toString();
+
+            dayName.textContent = `Jour ${date.day_name_with_article}`;
+
+            hour.textContent = date.hour.toString().padStart(2, '0');
+            minute.textContent = date.minute.toString().padStart(2, '0');
+            second.textContent = date.second.toString().padStart(2, '0');
+        }
+
+        async function run() {
+            await init();
+
+            let gregorian = Math.floor(Date.now() / 1000);
+            let timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
+            let seconds = timestamp.seconds;
+
+            let numGregorianSeconds = 24 * 60 * 60;
+            let numRepublicanSeconds = 10 * 100 * 100;
+            let interval_ms = 1000 * numGregorianSeconds / numRepublicanSeconds;
+
+            window.setInterval(async () => {
+                timestamp.seconds += BigInt(1);
+                await updateTime(timestamp);
+            }, interval_ms);
+        }
+      run();
+    </script>
+
 </body>
 </html>
