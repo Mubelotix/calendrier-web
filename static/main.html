@@ -69,6 +69,36 @@
         a:hover {
             text-decoration: underline;
         }
+
+        #art {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 50rem;
+        }
+
+        /* Scrolling number animation */
+        .time-digit {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            vertical-align: top;
+            height: 1.2em;
+        }
+
+        .time-digit-inner {
+            transition: transform 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .time-digit-value {
+            height: 1.2em;
+            line-height: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
     <style>
         #toggles {
@@ -132,14 +162,6 @@
             transition-duration: .2s;
         }
     </style>
-    <style>
-        #art {
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            width: 50rem;
-        }
-    </style>
 </head>
 
 <body>
@@ -170,7 +192,7 @@
             </h2>
 
             <h2>
-                <span id="hour">12</span>:<span id="minute">30</span>:<span id="second">45</span>
+                <span id="hour" class="time-number"></span>:<span id="minute" class="time-number"></span>:<span id="second" class="time-number"></span>
             </h2>
         </div>
 
@@ -236,6 +258,45 @@
         const second = document.getElementById('second');
         const decimalTimeToggle = document.getElementById('decimalTime');
 
+        // Initialize time display structure
+        function initializeTimeDisplay() {
+            [hour, minute, second].forEach(element => {
+                element.innerHTML = '';
+                const digits = ['0', '0'];
+                digits.forEach((digit, index) => {
+                    const digitContainer = document.createElement('span');
+                    digitContainer.className = 'time-digit';
+                    digitContainer.innerHTML = `
+                        <div class="time-digit-inner">
+                            ${Array.from({length: 10}, (_, i) => `<div class="time-digit-value">${i}</div>`).join('')}
+                        </div>
+                    `;
+                    element.appendChild(digitContainer);
+                });
+            });
+        }
+
+        function updateDigit(digitElement, newValue) {
+            const inner = digitElement.querySelector('.time-digit-inner');
+            const currentTransform = inner.style.transform;
+            const currentOffset = currentTransform ? parseInt(currentTransform.match(/-?\d+/)?.[0] || '0') : 0;
+            const targetOffset = -newValue * 1.2; // 1.2em height per digit
+            
+            if (currentOffset !== targetOffset) {
+                inner.style.transform = `translateY(${targetOffset}em)`;
+            }
+        }
+
+        function updateTimeNumber(element, value) {
+            const paddedValue = value.toString().padStart(2, '0');
+            const digits = element.querySelectorAll('.time-digit');
+            
+            for (let i = 0; i < 2; i++) {
+                const digitValue = parseInt(paddedValue[i]);
+                updateDigit(digits[i], digitValue);
+            }
+        }
+
         async function updateTime(timestamp, isDecimalTime = true) {
             let date = new DateTime(timestamp);
 
@@ -252,15 +313,15 @@
 
             if (isDecimalTime) {
                 // Display decimal time (republican time)
-                hour.textContent = date.hour.toString().padStart(2, '0');
-                minute.textContent = date.minute.toString().padStart(2, '0');
-                second.textContent = date.second.toString().padStart(2, '0');
+                updateTimeNumber(hour, date.hour);
+                updateTimeNumber(minute, date.minute);
+                updateTimeNumber(second, date.second);
             } else {
                 // Display regular 24-hour time
                 let gregorianDate = new Date();
-                hour.textContent = gregorianDate.getHours().toString().padStart(2, '0');
-                minute.textContent = gregorianDate.getMinutes().toString().padStart(2, '0');
-                second.textContent = gregorianDate.getSeconds().toString().padStart(2, '0');
+                updateTimeNumber(hour, gregorianDate.getHours());
+                updateTimeNumber(minute, gregorianDate.getMinutes());
+                updateTimeNumber(second, gregorianDate.getSeconds());
             }
         }
 
@@ -296,6 +357,9 @@
 
         async function run() {
             await init();
+
+            // Initialize the time display structure
+            initializeTimeDisplay();
 
             let gregorian = Math.floor(Date.now() / 1000);
             timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
