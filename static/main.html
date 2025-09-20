@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +28,8 @@
             }
         }
 
-        html, body {
+        html,
+        body {
             margin: 0;
             padding: 0;
             height: 100%;
@@ -139,6 +141,7 @@
         }
     </style>
 </head>
+
 <body>
     <main>
         <div id="toggles">
@@ -159,7 +162,8 @@
 
 
         <div id="main-info">
-            <h1 id="date"><span id="num-day">3</span> <span id="month">Vendémiaire</span> <span id="num-year">234</span></h1>
+            <h1 id="date"><span id="num-day">3</span> <span id="month">Vendémiaire</span> <span id="num-year">234</span>
+            </h1>
 
             <h2 id="day-name">
                 Jour des récompenses
@@ -175,7 +179,8 @@
 
     <footer>
         <span id="footer-text">
-            Créé par <a href="https://github.com/Mubelotix">Mubelotix</a> sur <a href="https://github.com/Mubelotix/calendrier-web">Github</a>.
+            Créé par <a href="https://github.com/Mubelotix">Mubelotix</a> sur <a
+                href="https://github.com/Mubelotix/calendrier-web">Github</a>.
         </span>
     </footer>
 
@@ -229,42 +234,97 @@
         const hour = document.getElementById('hour');
         const minute = document.getElementById('minute');
         const second = document.getElementById('second');
+        const decimalTimeToggle = document.getElementById('decimalTime');
 
-        async function updateTime(timestamp) {
+        async function updateTime(timestamp, isDecimalTime = true) {
             let date = new DateTime(timestamp);
 
+            // Always display republican date
             numDay.textContent = date.day.toString();
             if (date.month === "Sansculotides") {
                 month.textContent = "des " + date.month;
+            } else {
+                month.textContent = date.month;
             }
-            month.textContent = date.month;
             numYear.textContent = date.year.toString();
 
             dayName.textContent = `Jour ${date.day_name_with_article}`;
 
-            hour.textContent = date.hour.toString().padStart(2, '0');
-            minute.textContent = date.minute.toString().padStart(2, '0');
-            second.textContent = date.second.toString().padStart(2, '0');
+            if (isDecimalTime) {
+                // Display decimal time (republican time)
+                hour.textContent = date.hour.toString().padStart(2, '0');
+                minute.textContent = date.minute.toString().padStart(2, '0');
+                second.textContent = date.second.toString().padStart(2, '0');
+            } else {
+                // Display regular 24-hour time
+                let gregorianDate = new Date();
+                hour.textContent = gregorianDate.getHours().toString().padStart(2, '0');
+                minute.textContent = gregorianDate.getMinutes().toString().padStart(2, '0');
+                second.textContent = gregorianDate.getSeconds().toString().padStart(2, '0');
+            }
+        }
+
+        let currentInterval = null;
+        let timestamp = null;
+
+        function startDecimalTimeInterval() {
+            if (currentInterval) {
+                clearInterval(currentInterval);
+            }
+            
+            let numGregorianSeconds = 24 * 60 * 60;
+            let numRepublicanSeconds = 10 * 100 * 100;
+            let interval_ms = 1000 * numGregorianSeconds / numRepublicanSeconds;
+
+            currentInterval = window.setInterval(async () => {
+                timestamp.seconds += BigInt(1);
+                await updateTime(timestamp, true);
+            }, interval_ms);
+        }
+
+        function startGregorianTimeInterval() {
+            if (currentInterval) {
+                clearInterval(currentInterval);
+            }
+            
+            currentInterval = window.setInterval(async () => {
+                let gregorian = Math.floor(Date.now() / 1000);
+                timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
+                await updateTime(timestamp, false);
+            }, 1000);
         }
 
         async function run() {
             await init();
 
             let gregorian = Math.floor(Date.now() / 1000);
-            let timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
-            let seconds = timestamp.seconds;
+            timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
+            
+            // Initial display
+            if (decimalTimeToggle.checked) {
+                await updateTime(timestamp, true);
+                startDecimalTimeInterval();
+            } else {
+                await updateTime(timestamp, false);
+                startGregorianTimeInterval();
+            }
 
-            let numGregorianSeconds = 24 * 60 * 60;
-            let numRepublicanSeconds = 10 * 100 * 100;
-            let interval_ms = 1000 * numGregorianSeconds / numRepublicanSeconds;
-
-            window.setInterval(async () => {
-                timestamp.seconds += BigInt(1);
-                await updateTime(timestamp);
-            }, interval_ms);
+            // Handle toggle changes
+            decimalTimeToggle.addEventListener('change', async () => {
+                if (decimalTimeToggle.checked) {
+                    let gregorian = Math.floor(Date.now() / 1000);
+                    timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
+                    await updateTime(timestamp, true);
+                    startDecimalTimeInterval();
+                } else {
+                    await updateTime(timestamp, false);
+                    startGregorianTimeInterval();
+                }
+            });
         }
-      run();
+        run();
     </script>
 
 </body>
+
 </html>
