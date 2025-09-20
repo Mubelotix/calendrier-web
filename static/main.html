@@ -174,6 +174,61 @@
             transition-duration: .2s;
         }
     </style>
+    <style>
+        .tooltip, .tooltipDown {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .tooltip:hover .tooltiptext, .tooltipDown:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltiptext {
+            visibility: hidden;
+            width: 160px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -80px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .tooltipDown .tooltiptext {
+            bottom: auto;
+            top: 125%;
+        }
+
+        .tooltipDown .tooltiptext::before {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent #333 transparent;
+        }
+    </style>
 </head>
 
 <body>
@@ -181,16 +236,22 @@
         <div id="toggles">
             <!-- TODO: Remember state across reloads -->
 
-            <div class="toggleWrapper">
+            <div class="toggleWrapper tooltipDown">
                 Heure décimale
                 <input type="checkbox" id="decimalTime" class="checkboxInput" checked>
                 <label for="decimalTime" class="toggleSwitch"></label>
+                <div class="tooltiptext">
+                    Un jour contient 10 heures, une heure 100 minutes et une minute 100 secondes.
+                </div>
             </div>
 
-            <div class="toggleWrapper">
+            <div class="toggleWrapper tooltipDown">
                 Décalage temporel
                 <input type="checkbox" id="timeOffset" class="checkboxInput">
                 <label for="timeOffset" class="toggleSwitch"></label>
+                <div class="tooltiptext">
+                    Corrige les décalages résultant en une erreur d'environ 17 minutes dans l'heure officielle actuelle, afin de mieux correspondre au temps fixé à la Révolution française.
+                </div>
             </div>
         </div>
 
