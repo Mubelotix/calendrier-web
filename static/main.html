@@ -55,6 +55,18 @@
             text-align: center;
         }
 
+        #date, #time {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-block: 2rem;
+        }
+
+        #day-name {
+            font-size: 2rem;
+            font-weight: normal;
+            margin-block: 2rem;
+        }
+
         footer {
             background-color: var(--background-200);
             text-align: center;
@@ -191,7 +203,7 @@
                 Jour des récompenses
             </h2>
 
-            <h2>
+            <h2 id="time">
                 <span id="hour" class="time-number"></span>:<span id="minute" class="time-number"></span>:<span id="second" class="time-number"></span>
             </h2>
         </div>
