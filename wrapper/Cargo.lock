@@ -25,9 +25,9 @@ checksum = "46c5e41b57b8bba42a04676d81cb89e9ee8e859a1a66f80a5a72e1cb76b34d43"
 
 [[package]]
 name = "calendrier"
-version = "1.0.1"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03856a8bd72da1e52895ca90a68cc33fcc1754758d351c4739b64f341f7ddc65"
+checksum = "2bc6bfc8dd3211db49201f2f6d263dacd705e807d41aad4ccfa2839b1502c692"
 dependencies = [
  "chrono",
 ]

@@ -75,6 +75,16 @@ impl DateTime {
     }
 
     #[wasm_bindgen(getter)]
+    pub fn day_name(&self) -> String {
+        self.0.day_name().to_owned()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn day_name_with_article(&self) -> String {
+        self.0.day_name_with_article().to_owned()
+    }
+
+    #[wasm_bindgen(getter)]
     pub fn decade0(&self) -> i64 {
         self.0.decade0()
     }
