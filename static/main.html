@@ -180,7 +180,8 @@
             cursor: pointer;
         }
 
-        .tooltip:hover .tooltiptext, .tooltipDown:hover .tooltiptext {
+        .tooltip:hover .tooltiptext, .tooltipDown:hover .tooltiptext,
+        .tooltip .tooltiptext:hover, .tooltipDown .tooltiptext:hover {
             visibility: visible;
             opacity: 1;
         }
@@ -199,7 +200,13 @@
             left: 50%;
             margin-left: -80px;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s, visibility 0.3s;
+            transition-delay: 0s;
+        }
+
+        .tooltip:not(:hover) .tooltiptext:not(:hover),
+        .tooltipDown:not(:hover) .tooltiptext:not(:hover) {
+            transition-delay: 0.5s;
         }
 
         .tooltip .tooltiptext::after {
