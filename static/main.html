@@ -177,7 +177,7 @@
 
             <div class="toggleWrapper">
                 Décalage temporel
-                <input type="checkbox" id="timeOffset" class="checkboxInput" checked>
+                <input type="checkbox" id="timeOffset" class="checkboxInput">
                 <label for="timeOffset" class="toggleSwitch"></label>
             </div>
         </div>
@@ -257,6 +257,7 @@
         const minute = document.getElementById('minute');
         const second = document.getElementById('second');
         const decimalTimeToggle = document.getElementById('decimalTime');
+        const timeOffsetToggle = document.getElementById('timeOffset');
 
         // Initialize time display structure
         function initializeTimeDisplay() {
@@ -317,8 +318,9 @@
                 updateTimeNumber(minute, date.minute);
                 updateTimeNumber(second, date.second);
             } else {
-                // Display regular 24-hour time
-                let gregorianDate = new Date();
+                // Display regular 24-hour time with offset
+                let gregorian = getCurrentGregorianTimestamp();
+                let gregorianDate = new Date(gregorian * 1000);
                 updateTimeNumber(hour, gregorianDate.getHours());
                 updateTimeNumber(minute, gregorianDate.getMinutes());
                 updateTimeNumber(second, gregorianDate.getSeconds());
@@ -327,6 +329,14 @@
 
         let currentInterval = null;
         let timestamp = null;
+
+        function getCurrentGregorianTimestamp() {
+            let gregorian = Math.floor(Date.now() / 1000);
+            if (timeOffsetToggle.checked) {
+                gregorian += 1029;
+            }
+            return gregorian;
+        }
 
         function startDecimalTimeInterval() {
             if (currentInterval) {
@@ -349,7 +359,7 @@
             }
             
             currentInterval = window.setInterval(async () => {
-                let gregorian = Math.floor(Date.now() / 1000);
+                let gregorian = getCurrentGregorianTimestamp();
                 timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
                 await updateTime(timestamp, false);
             }, 1000);
@@ -361,7 +371,7 @@
             // Initialize the time display structure
             initializeTimeDisplay();
 
-            let gregorian = Math.floor(Date.now() / 1000);
+            let gregorian = getCurrentGregorianTimestamp();
             timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
             
             // Initial display
@@ -376,8 +386,22 @@
             // Handle toggle changes
             decimalTimeToggle.addEventListener('change', async () => {
                 if (decimalTimeToggle.checked) {
-                    let gregorian = Math.floor(Date.now() / 1000);
+                    let gregorian = getCurrentGregorianTimestamp();
                     timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
+                    await updateTime(timestamp, true);
+                    startDecimalTimeInterval();
+                } else {
+                    await updateTime(timestamp, false);
+                    startGregorianTimeInterval();
+                }
+            });
+
+            // Handle time offset toggle changes
+            timeOffsetToggle.addEventListener('change', async () => {
+                let gregorian = getCurrentGregorianTimestamp();
+                timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
+                
+                if (decimalTimeToggle.checked) {
                     await updateTime(timestamp, true);
                     startDecimalTimeInterval();
                 } else {
