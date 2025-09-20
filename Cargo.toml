@@ -1,10 +1,6 @@
 [package]
 name = "calendrier-web"
 version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+edition = "2024"
 
 [dependencies]
-yew = { version = "0.21", features = ["csr"] }
-yew-template = "0.10"
