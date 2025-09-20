@@ -1,23 +1,33 @@
 use crate::*;
 
 #[wasm_bindgen]
-pub struct Date(InnerDate);
+pub struct DateTime(InnerDateTime);
 
 #[wasm_bindgen]
-impl Date {
+impl DateTime {
     #[wasm_bindgen(constructor)]
-    pub fn from_timestamp(timestamp: Timestamp) -> Date {
-        Date(InnerDate::from_timestamp(timestamp.0))
+    pub fn from_timestamp(timestamp: &Timestamp) -> DateTime {
+        DateTime(InnerDateTime::from_timestamp(timestamp.0))
     }
 
     #[wasm_bindgen]
-    pub fn from_ymd(year: i64, month: i64, day: i64) -> Date {
-        Date(InnerDate::from_ymd(year, month, day))
+    pub fn from_ymd_hms(year: i64, month: i64, day: i64, hour: i64, minute: i64, second: i64) -> DateTime {
+        DateTime(InnerDateTime::from_ymd_hms(year, month, day, hour, minute, second))
     }
 
     #[wasm_bindgen]
-    pub fn from_ymd0(year: i64, month: i64, day: i64) -> Date {
-        Date(InnerDate::from_ymd0(year, month, day))
+    pub fn from_ymd_hms0(year0: i64, month0: i64, day0: i64, hour: i64, minute: i64, second: i64) -> DateTime {
+        DateTime(InnerDateTime::from_ymd_hms0(year0, month0, day0, hour, minute, second))
+    }
+
+    #[wasm_bindgen]
+    pub fn from_ymd(year: i64, month: i64, day: i64) -> DateTime {
+        DateTime(InnerDateTime::from_ymd(year, month, day))
+    }
+
+    #[wasm_bindgen]
+    pub fn from_ymd0(year0: i64, month0: i64, day0: i64) -> DateTime {
+        DateTime(InnerDateTime::from_ymd0(year0, month0, day0))
     }
 
     #[wasm_bindgen(getter)]
@@ -87,6 +97,31 @@ impl Date {
     #[wasm_bindgen(getter)]
     pub fn decade_day(&self) -> String {
         self.0.decade_day().to_string()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn hour(&self) -> i64 {
+        self.0.hour()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn minute(&self) -> i64 {
+        self.0.minute()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn second(&self) -> i64 {
+        self.0.second()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn hms(&self) -> Vec<i64> {
+        let mut res = Vec::new();
+        let (h, m, s) = self.0.hms();
+        res.push(h);
+        res.push(m);
+        res.push(s);
+        res
     }
 
     #[wasm_bindgen(getter)]

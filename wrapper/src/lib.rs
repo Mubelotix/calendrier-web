@@ -1,8 +1,8 @@
 use wasm_bindgen::prelude::*;
-use calendrier::{timestamp::Timestamp as InnerTimestamp, date::Date as InnerDate};
+use calendrier::{timestamp::Timestamp as InnerTimestamp, datetime::DateTime as InnerDateTime};
 
 mod timestamp;
-mod date;
+mod datetime;
 
 pub use timestamp::*;
-pub use date::*;
+pub use datetime::*;
