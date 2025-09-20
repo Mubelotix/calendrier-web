@@ -413,9 +413,9 @@
                 // Display regular 24-hour time with offset
                 let gregorian = getCurrentGregorianTimestamp();
                 let gregorianDate = new Date(gregorian * 1000);
-                updateTimeNumber(hour, gregorianDate.getHours());
-                updateTimeNumber(minute, gregorianDate.getMinutes());
-                updateTimeNumber(second, gregorianDate.getSeconds());
+                updateTimeNumber(hour, gregorianDate.getUTCHours());
+                updateTimeNumber(minute, gregorianDate.getUTCMinutes());
+                updateTimeNumber(second, gregorianDate.getUTCSeconds());
             }
         }
 
@@ -426,6 +426,9 @@
             let gregorian = Math.floor(Date.now() / 1000);
             if (timeOffsetToggle.checked) {
                 gregorian += 1029;
+            } else {
+                // Add the local timezone offset
+                gregorian -= new Date().getTimezoneOffset() * 60;
             }
             return gregorian;
         }
