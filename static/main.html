@@ -303,11 +303,7 @@
 
             // Always display republican date
             numDay.textContent = date.day.toString();
-            if (date.month === "Sansculotides") {
-                month.textContent = "des " + date.month;
-            } else {
-                month.textContent = date.month;
-            }
+            month.textContent = date.month;
             numYear.textContent = date.year.toString();
 
             dayName.textContent = `Jour ${date.day_name_with_article}`;
