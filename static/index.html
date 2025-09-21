@@ -461,7 +461,13 @@
         }
 
         async function run() {
-            await init();
+            try {
+                await init();
+            } catch (e) {
+                console.error("Failed to initialize WebAssembly module:", e);
+                alert("Erreur lors du chargement du module WebAssembly. Veuillez réessayer plus tard.");
+                return;
+            }
 
             // Initialize the time display structure
             initializeTimeDisplay();
