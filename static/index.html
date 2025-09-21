@@ -478,6 +478,23 @@
                 startGregorianTimeInterval();
             }
 
+            // Handle page visibility changes
+            document.addEventListener('visibilitychange', async () => {
+                if (!document.hidden) {
+                    // Page became visible again, resync time
+                    let gregorian = getCurrentGregorianTimestamp();
+                    timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
+                    
+                    if (decimalTimeToggle.checked) {
+                        await updateTime(timestamp, true);
+                        startDecimalTimeInterval();
+                    } else {
+                        await updateTime(timestamp, false);
+                        startGregorianTimeInterval();
+                    }
+                }
+            });
+
             // Handle toggle changes
             decimalTimeToggle.addEventListener('change', async () => {
                 if (decimalTimeToggle.checked) {
