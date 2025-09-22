@@ -261,24 +261,24 @@
         <div id="toggles">
             <!-- TODO: Remember state across reloads -->
 
-            <div class="toggleWrapper tooltipDown">
-                <label for="decimalTime">Heure décimale</label>
+            <label for="decimalTime" class="toggleWrapper tooltipDown">
+                Heure décimale
                 <input type="checkbox" id="decimalTime" class="checkboxInput" checked>
-                <label for="decimalTime" class="toggleSwitch"></label>
+                <div for="decimalTime" class="toggleSwitch"></div>
                 <div class="tooltiptext">
                     Un jour contient 10 heures, une heure 100 minutes et une minute 100 secondes.
                     <a href="https://fr.wikipedia.org/wiki/Temps_d%C3%A9cimal_en_France" target="_blank">Wikipédia</a>
                 </div>
-            </div>
+            </label>
 
-            <div class="toggleWrapper tooltipDown">
-                <label for="timeOffset">Fuseau horaire d'origine</label>
+            <label for="timeOffset" class="toggleWrapper tooltipDown">
+                Fuseau horaire d'origine
                 <input type="checkbox" id="timeOffset" class="checkboxInput" checked>
-                <label for="timeOffset" class="toggleSwitch"></label>
+                <div for="timeOffset" class="toggleSwitch"></div>
                 <div class="tooltiptext">
                     Utilise le fuseau horaire de l'observatoire de Paris et le <a href="https://fr.wikipedia.org/wiki/Temps_solaire" target="_blank">temps solaire vrai</a>. Ne correspond pas exactement au fuseaux GMT, car ils sont non-seulement <a href="https://fr.wikipedia.org/wiki/Heure_en_France#:~:text=on%20soustrait%209%C2%A0minutes%20et%2021%C2%A0secondes%2C%20pour%20correspondre%20%C3%A0%20l%27heure%20GMT" target="_blank">sur des méridiens différents</a>, mais aussi parce que GMT se base sur le <a href="https://fr.wikipedia.org/wiki/Temps_solaire" target="_blank">temps solaire moyen</a>.
                 </div>
-            </div>
+            </label>
         </div>
 
 
