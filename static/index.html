@@ -433,6 +433,11 @@
             return gregorian;
         }
 
+        function getCurrentRepublicanTimestamp() {
+            let gregorian = getCurrentGregorianTimestamp();
+            return CalendrierTimestamp.from_unix(BigInt(gregorian));
+        }
+
         function startDecimalTimeInterval() {
             if (currentInterval) {
                 clearInterval(currentInterval);
@@ -454,10 +459,21 @@
             }
             
             currentInterval = window.setInterval(async () => {
-                let gregorian = getCurrentGregorianTimestamp();
-                timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
+                timestamp = getCurrentRepublicanTimestamp();
                 await updateTime(timestamp, false);
             }, 1000);
+        }
+
+        async function onSettingsChanged() {
+            timestamp = getCurrentRepublicanTimestamp();
+                
+            if (decimalTimeToggle.checked) {
+                await updateTime(timestamp, true);
+                startDecimalTimeInterval();
+            } else {
+                await updateTime(timestamp, false);
+                startGregorianTimeInterval();
+            }
         }
 
         async function run() {
@@ -472,8 +488,7 @@
             // Initialize the time display structure
             initializeTimeDisplay();
 
-            let gregorian = getCurrentGregorianTimestamp();
-            timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
+            timestamp = getCurrentRepublicanTimestamp();
             
             // Initial display
             if (decimalTimeToggle.checked) {
@@ -484,49 +499,14 @@
                 startGregorianTimeInterval();
             }
 
-            // Handle page visibility changes
+            // Handle events
             document.addEventListener('visibilitychange', async () => {
                 if (!document.hidden) {
-                    // Page became visible again, resync time
-                    let gregorian = getCurrentGregorianTimestamp();
-                    timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
-                    
-                    if (decimalTimeToggle.checked) {
-                        await updateTime(timestamp, true);
-                        startDecimalTimeInterval();
-                    } else {
-                        await updateTime(timestamp, false);
-                        startGregorianTimeInterval();
-                    }
+                    onSettingsChanged();
                 }
             });
-
-            // Handle toggle changes
-            decimalTimeToggle.addEventListener('change', async () => {
-                if (decimalTimeToggle.checked) {
-                    let gregorian = getCurrentGregorianTimestamp();
-                    timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
-                    await updateTime(timestamp, true);
-                    startDecimalTimeInterval();
-                } else {
-                    await updateTime(timestamp, false);
-                    startGregorianTimeInterval();
-                }
-            });
-
-            // Handle time offset toggle changes
-            timeOffsetToggle.addEventListener('change', async () => {
-                let gregorian = getCurrentGregorianTimestamp();
-                timestamp = CalendrierTimestamp.from_unix(BigInt(gregorian));
-                
-                if (decimalTimeToggle.checked) {
-                    await updateTime(timestamp, true);
-                    startDecimalTimeInterval();
-                } else {
-                    await updateTime(timestamp, false);
-                    startGregorianTimeInterval();
-                }
-            });
+            decimalTimeToggle.addEventListener('change', onSettingsChanged);
+            timeOffsetToggle.addEventListener('change', onSettingsChanged);
         }
         run();
     </script>
