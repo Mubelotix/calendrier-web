@@ -97,13 +97,6 @@
             text-decoration: underline;
         }
 
-        #art {
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            width: 50rem;
-        }
-
         /* Scrolling number animation */
         .time-digit {
             position: relative;
@@ -291,8 +284,6 @@
                 <span id="hour" class="time-number">--</span>:<span id="minute" class="time-number">--</span>:<span id="second" class="time-number">--</span>
             </h2>
         </div>
-
-        <img src="art.png" alt="Marianne" id="art">
     </main>
 
     <footer>
@@ -301,46 +292,6 @@
                 href="https://github.com/Mubelotix/calendrier-web">Github</a>.
         </span>
     </footer>
-
-    <script>
-        const art = document.getElementById('art');
-        const mainInfo = document.getElementById('main-info');
-        const footerText = document.getElementById('footer-text');
-
-        function onresize() {
-            art.style.display = 'block';
-            let success = false;
-            for (let size = 50; size >= 20; size--) {
-                art.style.width = size + 'rem';
-                const artRect = art.getBoundingClientRect();
-                const mainInfoRect = mainInfo.getBoundingClientRect();
-                const footerTextRect = footerText.getBoundingClientRect();
-                const intersectsMainInfo = !(artRect.right < mainInfoRect.left ||
-                    artRect.left > mainInfoRect.right ||
-                    artRect.bottom < mainInfoRect.top ||
-                    artRect.top > mainInfoRect.bottom);
-                const intersectsFooterText = !(artRect.right < footerTextRect.left ||
-                    artRect.left > footerTextRect.right ||
-                    artRect.bottom < footerTextRect.top ||
-                    artRect.top > footerTextRect.bottom);
-
-                // if any intersect
-                if (intersectsMainInfo || intersectsFooterText) {
-                    continue;
-                } else {
-                    success = true;
-                    break;
-                }
-            }
-
-            if (!success) {
-                art.style.display = 'none';
-            }
-        }
-
-        window.addEventListener('resize', onresize);
-        window.addEventListener('load', onresize);
-    </script>
 
     <script type="module">
         import init, { DateTime, Timestamp as CalendrierTimestamp } from '../calendrier_web.js';
