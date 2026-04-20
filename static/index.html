@@ -24,6 +24,7 @@
         :root {
             --background-100: #fff;
             --background-200: #eee;
+            --background-300: #fff;
             --toggle-background: #7d777b;
             --text: #000;
             --primary: #DC6ACF;
@@ -53,17 +54,16 @@
         body {
             background-color: var(--background-100);
             color: var(--text);
-            display: flex;
-            flex-direction: column;
             font-family: Arial, sans-serif;
         }
 
         main {
-            flex-grow: 1;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
 
         #main-info {
@@ -85,7 +85,11 @@
         footer {
             background-color: var(--background-200);
             text-align: center;
-            padding: .5rem
+            padding: .5rem;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
 
         a {
@@ -246,6 +250,117 @@
             border-style: solid;
             border-color: transparent transparent #333 transparent;
         }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            color: var(--primary);
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .scroll-indicator:hover {
+            opacity: 0.7;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0) rotate(90deg);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px) rotate(90deg);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px) rotate(90deg);
+            }
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            background-color: var(--background-200);
+            padding: 4rem 2rem;
+            min-height: 100%;
+            box-sizing: border-box;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text);
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+            border-radius: .5rem;
+            background-color: var(--background-100);
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease;
+            border: 1px solid transparent;
+            border-radius: .5rem;
+            list-style: none;
+        }
+
+        .faq-question::-webkit-details-marker {
+            display: none;
+        }
+
+        .faq-question::marker {
+            content: none;
+        }
+
+        .faq-question:hover {
+            background-color: var(--background-300);
+            border: 1px solid var(--primary);
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        .faq-item[open] .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-answer p {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+
+        .faq-answer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .faq-answer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -284,7 +399,74 @@
                 <span id="hour" class="time-number">--</span>:<span id="minute" class="time-number">--</span>:<span id="second" class="time-number">--</span>
             </h2>
         </div>
+
+        <div class="scroll-indicator" onclick="scrollToFAQ()">
+            &#8250;
+        </div>
     </main>
+
+    <div class="faq-section" id="faq-section">
+        <div class="faq-container">
+            <h2 class="faq-title">Questions Fréquemment Posées</h2>
+            
+            <details class="faq-item">
+                <summary class="faq-question">
+                    <span>Qu'est-ce que le calendrier républicain ?</span>
+                    <span class="faq-icon">&#8964;</span>
+                </summary>
+                <div class="faq-answer">
+                    <p>Le calendrier républicain, aussi appelé calendrier révolutionnaire français, fut créé pendant la Révolution française en 1793. Il est destiné à remplacer le calendrier grégorien et à marquer une rupture avec l'Ancien Régime et l'influence religieuse.</p>
+                    <p>Ce calendrier compte 12 mois de 30 jours chacun, plus 5 ou 6 jours complémentaires. L'année commence à l'équinoxe d'automne (vers le 22 septembre), jour d'anniversaire de la République.</p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">
+                    <span>Comment fonctionne l'heure décimale ?</span>
+                    <span class="faq-icon">&#8964;</span>
+                </summary>
+                <div class="faq-answer">
+                    <p>L'heure décimale divise la journée en 10 heures au lieu de 24. Chaque heure contient 100 minutes décimales, et chaque minute contient 100 secondes décimales.</p>
+                    <p>L'intérêt est de simplifier les calculs de temps et conversions entre les différentes unités.</p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">
+                    <span>Qu'est ce que le fuseau horaire d'origine ?</span>
+                    <span class="faq-icon">&#8964;</span>
+                </summary>
+                <div class="faq-answer">
+                    <ul>
+                        <li>
+                            Temps vrai : Le calendrier républicain est basé sur les mesures de l'Observatoire de Paris qui utilisait le temps solaire vrai pour le temps civi lors de sa définition. Cette méthode a pour avantage de nous dispenser de l'enfer des <a href="https://fr.wikipedia.org/wiki/Seconde_intercalaire">secondes intercalaires</a> nécessaires à l'UTC, mais rend les secondes décimales du temps civil irrégulières.
+                        </li>
+                        <li>
+                            Décalage méridien : Paris est situé à 2°20' à l'est du méridien de Greenwich, ce qui crée un décalage de 9 minutes et 21 secondes entre le temps solaire vrai de Paris et le temps GMT moderne.
+                        </li>
+                        <li>
+                            Heure d'été : Le calendrier républicain n'inclue pas de concept d'heure d'été ce qui résulte dans le décallage d'une heure.
+                        </li>
+                    </ul>
+                    <p>Il est probable que si le calendrier républicain était resté officiel, nous serions passés au temps moyen, peut être à l'heure d'été et peut être même au temps de Greenwich.</p>
+                    <p>Cocher l'option du fuseau horaire d'origine a pour effet d'ignorer l'heure d'été, de fixer l'heure sur le méridien de l'observatoire de Paris, et d'aligner les temps de références donnés par la loi. Toutefois, cette option ne permet pas de prendre en compte le temps solaire vrai pour le moment.</p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question">
+                    <span>Quels sont les noms des mois républicains ?</span>
+                    <span class="faq-icon">&#8964;</span>
+                </summary>
+                <div class="faq-answer">
+                    <p><strong>Automne :</strong> Vendémiaire, Brumaire, Frimaire</p>
+                    <p><strong>Hiver :</strong> Nivôse, Pluviôse, Ventôse</p>
+                    <p><strong>Printemps :</strong> Germinal, Floréal, Prairial</p>
+                    <p><strong>Été :</strong> Messidor, Thermidor, Fructidor</p>
+                </div>
+            </details>
+        </div>
+    </div>
 
     <footer>
         <span id="footer-text">
@@ -292,6 +474,14 @@
                 href="https://github.com/Mubelotix/calendrier-web">Github</a>.
         </span>
     </footer>
+
+    <script>
+        function scrollToFAQ() {
+            document.getElementById('faq-section').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+    </script>
 
     <script type="module">
         import init, { DateTime, Timestamp as CalendrierTimestamp } from '../calendrier_web.js';
