@@ -4,7 +4,7 @@ Website showing the current date in the [French Republican calendar](https://en.
 
 ## Building the library
 
-While this project is written entirely in JavaScript, it uses my [Rust library](https://github.com/Mubelotix/calendrier) for date calculations. This library needs to be compiled only once.
+While this project is written entirely in JavaScript, it uses my [Rust library](https://github.com/Mubelotix/calendrier) for date calculations. The wrapper now ships in two variants: the default build and a `solar` build.
 
 ```bash
 # Install Rust
@@ -16,8 +16,9 @@ rustup target add wasm32-unknown-unknown
 # Install wasm-pack
 cargo install wasm-pack
 
-# Build the library
-wasm-pack build --target web
+# Build both wrapper variants
+cd wrapper
+./build.sh
 ```
 
 ## Running
@@ -29,5 +30,6 @@ cd static
 python3 -m http.server
 ```
 
-There are symlinks in the `static` folder that point to the compiled files in `./wrapper/pkg`.
+There are symlinks in the `static` folder that point to the compiled files in `./wrapper/pkg` and `./wrapper/pkg-solar`.
+The default site uses `calendrier_web_bg.wasm`, and `calendrier_web_solar_bg.wasm` is exposed alongside it for comparison.
 Your web server must support serving symlinks (just use python).
