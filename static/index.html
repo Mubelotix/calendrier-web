@@ -20,6 +20,13 @@
     <meta name="twitter:description" content="Calendrier révolutionnaire français avec heure décimale en temps réel.">
     <!-- <meta name="twitter:image" content="https://calendrier.dera.page/art.png"> -->
     <link rel="canonical" href="https://calendrier.dera.page">
+    <script type="importmap">
+        {
+            "imports": {
+                "env": "./env.js"
+            }
+        }
+    </script>
     <style>
         :root {
             --background-100: #fff;
@@ -379,12 +386,30 @@
                 </div>
             </label>
 
-            <label for="timeOffset" class="toggleWrapper tooltipDown">
-                Fuseau horaire d'origine
-                <input type="checkbox" id="timeOffset" class="checkboxInput" checked>
-                <div for="timeOffset" class="toggleSwitch"></div>
+            <label for="parisTime" class="toggleWrapper tooltipDown">
+                Heure de Paris
+                <input type="checkbox" id="parisTime" class="checkboxInput" checked>
+                <div for="parisTime" class="toggleSwitch"></div>
                 <div class="tooltiptext">
-                    Utilise le fuseau horaire de l'observatoire de Paris et le <a href="https://fr.wikipedia.org/wiki/Temps_solaire" target="_blank">temps solaire vrai</a>. Ne correspond pas exactement au fuseaux GMT, car ils sont non-seulement <a href="https://fr.wikipedia.org/wiki/Heure_en_France#:~:text=on%20soustrait%209%C2%A0minutes%20et%2021%C2%A0secondes%2C%20pour%20correspondre%20%C3%A0%20l%27heure%20GMT" target="_blank">sur des méridiens différents</a>, mais aussi parce que GMT se base sur le <a href="https://fr.wikipedia.org/wiki/Temps_solaire" target="_blank">temps solaire moyen</a>.
+                    Affiche l'heure comme à Paris. Si tu la désactives, l'affichage s'aligne sur le méridien de Greenwich, souvent pris comme référence mondiale.
+                </div>
+            </label>
+
+            <label for="solarTime" class="toggleWrapper tooltipDown">
+                Temps solaire vrai
+                <input type="checkbox" id="solarTime" class="checkboxInput" checked>
+                <div for="solarTime" class="toggleSwitch"></div>
+                <div class="tooltiptext">
+                    Utilise une version du calendrier qui suit le soleil au plus près. Si tu la désactives, tu reviens au calcul normal.
+                </div>
+            </label>
+
+            <label for="summerTime" class="toggleWrapper tooltipDown">
+                Heure avancée
+                <input type="checkbox" id="summerTime" class="checkboxInput">
+                <div for="summerTime" class="toggleSwitch"></div>
+                <div class="tooltiptext">
+                    Prend en compte le décalage saisonnier de ton navigateur. Si tu la désactives, on garde l'heure universelle.
                 </div>
             </label>
         </div>
@@ -433,23 +458,23 @@
 
             <details class="faq-item">
                 <summary class="faq-question">
-                    <span>Qu'est ce que le fuseau horaire d'origine ?</span>
+                    <span>Comment fonctionnent les options de temps ?</span>
                     <span class="faq-icon">&#8964;</span>
                 </summary>
                 <div class="faq-answer">
+                    <p>Ces trois options servent à choisir quelle manière d'afficher l'heure te convient le mieux. Elles agissent séparément, donc tu peux en activer une, deux ou trois selon ce que tu veux voir à l'écran.</p>
                     <ul>
                         <li>
-                            Temps vrai : Le calendrier républicain est basé sur les mesures de l'Observatoire de Paris qui utilisait le temps solaire vrai pour le temps civi lors de sa définition. Cette méthode a pour avantage de nous dispenser de l'enfer des <a href="https://fr.wikipedia.org/wiki/Seconde_intercalaire">secondes intercalaires</a> nécessaires à l'UTC, mais rend les secondes décimales du temps civil irrégulières.
+                            <strong>Heure de Paris :</strong> garde l'affichage calé sur Paris, qui est la référence naturelle du calendrier républicain. Si tu la désactives, l'affichage se décale vers Greenwich, ce qui permet de comparer avec une référence plus universelle.
                         </li>
                         <li>
-                            Décalage méridien : Paris est situé à 2°20' à l'est du méridien de Greenwich, ce qui crée un décalage de 9 minutes et 21 secondes entre le temps solaire vrai de Paris et le temps GMT moderne.
+                            <strong>Temps solaire vrai :</strong> donne une version du calendrier plus proche du mouvement réel du soleil. C'est l'option à choisir si tu veux le comportement le plus fidèle à l'idée d'un temps solaire.
                         </li>
                         <li>
-                            Heure d'été : Le calendrier républicain n'inclue pas de concept d'heure d'été ce qui résulte dans le décallage d'une heure.
+                            <strong>Heure avancée :</strong> prend en compte le changement d'heure selon la période de l'année. Quand elle est activée, l'heure affichée suit ce que ton navigateur considère comme l'heure locale ; quand elle est désactivée, on reste sur l'heure universelle.
                         </li>
                     </ul>
-                    <p>Il est probable que si le calendrier républicain était resté officiel, nous serions passés au temps moyen, peut être à l'heure d'été et peut être même au temps de Greenwich.</p>
-                    <p>Cocher l'option du fuseau horaire d'origine a pour effet d'ignorer l'heure d'été, de fixer l'heure sur le méridien de l'observatoire de Paris, et d'aligner les temps de références donnés par la loi. Toutefois, cette option ne permet pas de prendre en compte le temps solaire vrai pour le moment.</p>
+                    <p>En pratique, l'idée est de te laisser choisir entre trois repères différents: Paris comme base historique, Greenwich comme repère plus neutre, et le soleil comme référence la plus naturelle. Tu peux aussi garder le comportement actuel si c'est ce qui te semble le plus clair.</p>
                 </div>
             </details>
 
@@ -484,7 +509,8 @@
     </script>
 
     <script type="module">
-        import init, { DateTime, Timestamp as CalendrierTimestamp } from '../calendrier_web.js';
+        const defaultCalendrierPromise = import('../calendrier_web.js');
+        const solarCalendrierPromise = import('../calendrier_web_solar.js');
 
         const numDay = document.getElementById('num-day');
         const month = document.getElementById('month');
@@ -494,7 +520,12 @@
         const minute = document.getElementById('minute');
         const second = document.getElementById('second');
         const decimalTimeToggle = document.getElementById('decimalTime');
-        const timeOffsetToggle = document.getElementById('timeOffset');
+        const parisTimeToggle = document.getElementById('parisTime');
+        const solarTimeToggle = document.getElementById('solarTime');
+        const summerTimeToggle = document.getElementById('summerTime');
+
+        let defaultCalendrier = null;
+        let solarCalendrier = null;
 
         // Initialize time display structure
         function initializeTimeDisplay() {
@@ -535,8 +566,47 @@
             }
         }
 
-        async function updateTime(timestamp, isDecimalTime = true) {
-            let date = new DateTime(timestamp);
+        function getAdjustedUnixTimestamp() {
+            let unixTimestamp = Math.floor(Date.now() / 1000);
+
+            if (summerTimeToggle.checked) {
+                unixTimestamp -= new Date().getTimezoneOffset() * 60;
+            }
+
+            if (!parisTimeToggle.checked) {
+                unixTimestamp -= 9 * 60 + 21;
+            }
+
+            return unixTimestamp;
+        }
+
+        function getActiveCalendrier() {
+            return solarTimeToggle.checked ? solarCalendrier : defaultCalendrier;
+        }
+
+        function createRepublicanTimestamp(calendrierModule) {
+            return calendrierModule.Timestamp.from_unix(BigInt(getAdjustedUnixTimestamp()));
+        }
+
+        function getDecimalIntervalMs(calendrierModule) {
+            const baseIntervalMs = 1000 * (24 * 60 * 60) / (10 * 100 * 100);
+
+            if (!solarTimeToggle.checked || typeof calendrierModule.get_solar_time_speed_ratio !== 'function') {
+                return baseIntervalMs;
+            }
+
+            const unixTimestamp = BigInt(getAdjustedUnixTimestamp());
+            const ratio = calendrierModule.get_solar_time_speed_ratio(unixTimestamp, 3600);
+
+            if (!Number.isFinite(ratio) || ratio <= 0) {
+                return baseIntervalMs;
+            }
+
+            return baseIntervalMs / ratio;
+        }
+
+        async function updateTime(calendrierModule, timestamp, isDecimalTime = true) {
+            let date = new calendrierModule.DateTime(timestamp);
 
             // Always display republican date
             numDay.textContent = date.day.toString();
@@ -552,7 +622,7 @@
                 updateTimeNumber(second, date.second);
             } else {
                 // Display regular 24-hour time with offset
-                let gregorian = getCurrentGregorianTimestamp();
+                let gregorian = getAdjustedUnixTimestamp();
                 let gregorianDate = new Date(gregorian * 1000);
                 updateTimeNumber(hour, gregorianDate.getUTCHours());
                 updateTimeNumber(minute, gregorianDate.getUTCMinutes());
@@ -563,63 +633,62 @@
         let currentInterval = null;
         let timestamp = null;
 
-        function getCurrentGregorianTimestamp() {
-            let gregorian = Math.floor(Date.now() / 1000);
-            if (timeOffsetToggle.checked) {
-                gregorian += 1029;
-            } else {
-                // Add the local timezone offset
-                gregorian -= new Date().getTimezoneOffset() * 60;
-            }
-            return gregorian;
+        async function initializeCalendrierModules() {
+            [defaultCalendrier, solarCalendrier] = await Promise.all([
+                defaultCalendrierPromise,
+                solarCalendrierPromise,
+            ]);
+
+            await Promise.all([
+                defaultCalendrier.default(),
+                solarCalendrier.default(new URL('./calendrier_web_solar_bg.wasm', import.meta.url)),
+            ]);
         }
 
-        function getCurrentRepublicanTimestamp() {
-            let gregorian = getCurrentGregorianTimestamp();
-            return CalendrierTimestamp.from_unix(BigInt(gregorian));
+        function getCurrentRepublicanTimestamp(calendrierModule) {
+            return createRepublicanTimestamp(calendrierModule);
         }
 
-        function startDecimalTimeInterval() {
+        function startDecimalTimeInterval(calendrierModule) {
             if (currentInterval) {
                 clearInterval(currentInterval);
             }
-            
-            let numGregorianSeconds = 24 * 60 * 60;
-            let numRepublicanSeconds = 10 * 100 * 100;
-            let interval_ms = 1000 * numGregorianSeconds / numRepublicanSeconds;
+
+            let interval_ms = getDecimalIntervalMs(calendrierModule);
 
             currentInterval = window.setInterval(async () => {
                 timestamp.seconds += BigInt(1);
-                await updateTime(timestamp, true);
+                await updateTime(calendrierModule, timestamp, true);
             }, interval_ms);
         }
 
-        function startGregorianTimeInterval() {
+        function startGregorianTimeInterval(calendrierModule) {
             if (currentInterval) {
                 clearInterval(currentInterval);
             }
             
             currentInterval = window.setInterval(async () => {
-                timestamp = getCurrentRepublicanTimestamp();
-                await updateTime(timestamp, false);
+                timestamp = getCurrentRepublicanTimestamp(calendrierModule);
+                await updateTime(calendrierModule, timestamp, false);
             }, 1000);
         }
 
         async function onSettingsChanged() {
-            timestamp = getCurrentRepublicanTimestamp();
+            const calendrierModule = getActiveCalendrier();
+            timestamp = getCurrentRepublicanTimestamp(calendrierModule);
                 
             if (decimalTimeToggle.checked) {
-                await updateTime(timestamp, true);
-                startDecimalTimeInterval();
+                await updateTime(calendrierModule, timestamp, true);
+                startDecimalTimeInterval(calendrierModule);
             } else {
-                await updateTime(timestamp, false);
-                startGregorianTimeInterval();
+                await updateTime(calendrierModule, timestamp, false);
+                startGregorianTimeInterval(calendrierModule);
             }
         }
 
         async function run() {
             try {
-                await init();
+                await initializeCalendrierModules();
             } catch (e) {
                 console.error("Failed to initialize WebAssembly module:", e);
                 alert("Erreur lors du chargement du module WebAssembly. Veuillez réessayer plus tard.");
@@ -629,15 +698,16 @@
             // Initialize the time display structure
             initializeTimeDisplay();
 
-            timestamp = getCurrentRepublicanTimestamp();
+            const calendrierModule = getActiveCalendrier();
+            timestamp = getCurrentRepublicanTimestamp(calendrierModule);
             
             // Initial display
             if (decimalTimeToggle.checked) {
-                await updateTime(timestamp, true);
-                startDecimalTimeInterval();
+                await updateTime(calendrierModule, timestamp, true);
+                startDecimalTimeInterval(calendrierModule);
             } else {
-                await updateTime(timestamp, false);
-                startGregorianTimeInterval();
+                await updateTime(calendrierModule, timestamp, false);
+                startGregorianTimeInterval(calendrierModule);
             }
 
             // Handle events
@@ -647,7 +717,9 @@
                 }
             });
             decimalTimeToggle.addEventListener('change', onSettingsChanged);
-            timeOffsetToggle.addEventListener('change', onSettingsChanged);
+            parisTimeToggle.addEventListener('change', onSettingsChanged);
+            solarTimeToggle.addEventListener('change', onSettingsChanged);
+            summerTimeToggle.addEventListener('change', onSettingsChanged);
         }
         run();
     </script>
